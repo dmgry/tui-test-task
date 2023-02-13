@@ -4,6 +4,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 
 import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.builders.RequestHandlerSelectors;
@@ -14,6 +15,7 @@ import springfox.documentation.spring.web.plugins.Docket;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import static com.ciklum.test.github.consumer.exception.GlobalExceptionHandler.NOT_FOUND_USER;
 import static com.ciklum.test.github.consumer.exception.GlobalExceptionHandler.UNSUPPORTED_ACCEPT_HEADER;
@@ -28,12 +30,14 @@ public class SpringFoxConfig {
     public Docket api() {
         Docket docket = new Docket(DocumentationType.SWAGGER_2)
                 .select()
+
                 .apis(RequestHandlerSelectors.basePackage("com.ciklum.test.github.consumer.controller"))
                 .paths(PathSelectors.any())
+
                 .build();
         docket.useDefaultResponseMessages(false)
                 .globalResponses(HttpMethod.GET, buildErrorResponses());
-
+        docket.consumes(Set.of(MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE));
         return docket;
     }
 

@@ -7,7 +7,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 class ConsumerApplicationTests {
 
 	@Test
-	void contextLoads() {
-	}
+	void smokeApplicationTest() {}
 
 }

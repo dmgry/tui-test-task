@@ -1,12 +1,18 @@
 package com.ciklum.test.github.consumer.exception;
 
-import com.ciklum.test.github.consumer.dto.ErrorResponse;
-import lombok.extern.slf4j.Slf4j;
+import static org.springframework.http.HttpStatus.NOT_ACCEPTABLE;
+
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.HttpMediaTypeNotAcceptableException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.client.HttpClientErrorException;
+
+import com.ciklum.test.github.consumer.dto.ErrorResponse;
+
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @ControllerAdvice
@@ -22,6 +28,12 @@ public class GlobalExceptionHandler {
         errorDto.setStatus(ex.getStatusCode().value());
         errorDto.setMessage(NOT_FOUND_USER);
         return new ResponseEntity<>(errorDto, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(HttpMediaTypeNotAcceptableException.class)
+    public ResponseEntity<String> handleHttpMediaTypeNotAcceptableException(HttpMediaTypeNotAcceptableException ex) {
+        String errorMsg = "{\"status\": "+ NOT_ACCEPTABLE.value() +", \"message\": \"" + UNSUPPORTED_ACCEPT_HEADER + "\"}";
+        return new ResponseEntity<>(errorMsg, NOT_ACCEPTABLE);
     }
 
     @ExceptionHandler(Exception.class)
