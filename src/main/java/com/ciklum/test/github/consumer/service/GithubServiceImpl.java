@@ -1,55 +1,69 @@
 package com.ciklum.test.github.consumer.service;
 
-import com.ciklum.test.github.consumer.dto.BranchDto;
-import com.ciklum.test.github.consumer.dto.BranchRS;
-import com.ciklum.test.github.consumer.dto.RepositoryDto;
-import com.ciklum.test.github.consumer.dto.RepositoryRS;
-import com.ciklum.test.github.consumer.properties.GithubProperties;
-import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
+import com.ciklum.test.github.consumer.dto.BranchDto;
+import com.ciklum.test.github.consumer.dto.BranchResponse;
+import com.ciklum.test.github.consumer.dto.RepositoryDto;
+import com.ciklum.test.github.consumer.dto.RepositoryResponse;
+import com.ciklum.test.github.consumer.properties.GithubProperties;
+
+import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Service
 @AllArgsConstructor
 public class GithubServiceImpl implements GithubRepoService {
 
+    public static final String EMPTY_STRING = "";
+
     private GithubProperties props;
-    private RestTemplate restTemplate;
+    private RestTemplate githubRestTemplate;
 
     @Override
-    public List<RepositoryRS> getUserRepositories(String username) {
+    public List<RepositoryResponse> getUserRepositories(String username) {
         log.info("Fetching repositories data for user: {}", username);
         String repoPathWithName = String.format(props.getReposUrl(), username);
-        RepositoryDto[] repositories = restTemplate.getForObject(repoPathWithName, RepositoryDto[].class);
+        ResponseEntity<List<RepositoryDto>> repositories = githubRestTemplate.exchange(repoPathWithName,
+                                                                                       HttpMethod.GET, null,
+                                                                                       new ParameterizedTypeReference<>() {
+                                                                                       });
 
-        return Arrays.asList(repositories)
-                .stream().parallel()
-                .filter(repo -> !repo.isFork())
-                .map(repo -> {
-                    String branchPath = String.format(props.getBranchesUrl(), username, repo.getName());
-                    // TODO: potential point of problem, it depends on business, should we log it or interrupt or other action
-                    BranchDto[] branchDtos = restTemplate.getForObject(branchPath, BranchDto[].class);
-                    return mapToRepoRS(repo, branchDtos);
-                }).collect(Collectors.toList());
+        return repositories.getBody()
+            .stream().parallel()
+            .filter(repo -> !repo.isFork())
+            .map(repo -> getRepositoryResponse(username, repo))
+            .collect(Collectors.toList());
     }
 
-    private RepositoryRS mapToRepoRS(RepositoryDto repository, BranchDto[] branchDtos) {
-        List<BranchRS> branchesRS = Arrays.asList(branchDtos)
-                .stream()
-                .map(br -> new BranchRS(br.getName(), getSha(br)))
-                .collect(Collectors.toList());
+    private RepositoryResponse getRepositoryResponse(String username, RepositoryDto repo) {
+        String branchPath = String.format(props.getBranchesUrl(), username, repo.getName());
+        // TODO: potential point of problem, it depends on business, should we log it or interrupt or other action
+        ResponseEntity<List<BranchDto>> branchDtos = githubRestTemplate.exchange(branchPath, HttpMethod.GET, null,
+                                                                                 new ParameterizedTypeReference<>() {
+                                                                                 });
 
-        return new RepositoryRS(repository.getName(), repository.getOwner().getLogin(), branchesRS);
+        return mapToRepoRS(repo, branchDtos.getBody());
+    }
+
+    private RepositoryResponse mapToRepoRS(RepositoryDto repository, List<BranchDto> branchDtos) {
+        List<BranchResponse> branchesRS = branchDtos.stream()
+            .map(br -> new BranchResponse(br.getName(), getSha(br)))
+            .collect(Collectors.toList());
+
+        return new RepositoryResponse(repository.getName(), repository.getOwner().getLogin(), branchesRS);
     }
 
     private String getSha(BranchDto br) {
-        return br != null ? br.getCommit().getSha() : "";
+        return br != null ? br.getCommit().getSha() : EMPTY_STRING;
 
     }
 }

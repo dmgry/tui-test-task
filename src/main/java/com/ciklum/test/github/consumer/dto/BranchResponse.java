@@ -9,7 +9,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @Getter
 @Setter
-public class BranchRS {
+public class BranchResponse {
 
     private String name;
     private String lastCommitSha;

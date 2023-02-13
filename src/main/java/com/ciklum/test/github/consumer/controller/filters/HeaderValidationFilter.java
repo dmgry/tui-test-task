@@ -1,20 +1,22 @@
 package com.ciklum.test.github.consumer.controller.filters;
 
 
-import org.springframework.stereotype.Component;
+import static com.ciklum.test.github.consumer.exception.GlobalExceptionHandler.UNSUPPORTED_ACCEPT_HEADER;
 
-import javax.servlet.*;
+import javax.servlet.Filter;
+import javax.servlet.FilterChain;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 import java.io.IOException;
 
-import static com.ciklum.test.github.consumer.exception.GlobalExceptionHandler.INVALID_ACCEPT_HEADER_FORMAT;
-import static com.ciklum.test.github.consumer.exception.GlobalExceptionHandler.UNSUPPORTED_ACCEPT_HEADER;
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Component;
 
 @Component
 public class HeaderValidationFilter implements Filter {
-
 
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain)
@@ -25,7 +27,7 @@ public class HeaderValidationFilter implements Filter {
 
         if (headerValue.equals("application/xml")) {
             HttpServletResponse response = (HttpServletResponse) servletResponse;
-            response.setStatus(INVALID_ACCEPT_HEADER_FORMAT);
+            response.setStatus(HttpStatus.NOT_ACCEPTABLE.value());
             response.setContentType("application/json");
             response.getWriter().write("{\"status\": 406, \"Message\": \"" + UNSUPPORTED_ACCEPT_HEADER + "\"}");
         } else {

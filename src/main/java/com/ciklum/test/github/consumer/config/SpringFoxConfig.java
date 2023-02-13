@@ -3,6 +3,8 @@ package com.ciklum.test.github.consumer.config;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
+
 import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.builders.RequestHandlerSelectors;
 import springfox.documentation.builders.ResponseBuilder;
@@ -15,6 +17,9 @@ import java.util.List;
 
 import static com.ciklum.test.github.consumer.exception.GlobalExceptionHandler.NOT_FOUND_USER;
 import static com.ciklum.test.github.consumer.exception.GlobalExceptionHandler.UNSUPPORTED_ACCEPT_HEADER;
+import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
+import static org.springframework.http.HttpStatus.NOT_ACCEPTABLE;
+import static org.springframework.http.HttpStatus.NOT_FOUND;
 
 @Configuration
 public class SpringFoxConfig {
@@ -34,9 +39,15 @@ public class SpringFoxConfig {
 
     private List<Response> buildErrorResponses() {
         ArrayList<Response> responses = new ArrayList<>();
-        responses.add(new ResponseBuilder().code("404").description(NOT_FOUND_USER).build());
-        responses.add(new ResponseBuilder().code("406").description(UNSUPPORTED_ACCEPT_HEADER).build());
-        responses.add(new ResponseBuilder().code("500").description("Internal server error").build());
+        responses.add(new ResponseBuilder()
+                          .code(String.valueOf(NOT_FOUND.value()))
+                          .description(NOT_FOUND_USER).build());
+        responses.add(new ResponseBuilder()
+                          .code(String.valueOf(NOT_ACCEPTABLE.value()))
+                          .description(UNSUPPORTED_ACCEPT_HEADER).build());
+        responses.add(new ResponseBuilder()
+                          .code(String.valueOf(INTERNAL_SERVER_ERROR.value()))
+                          .description(INTERNAL_SERVER_ERROR.getReasonPhrase()).build());
 
         return responses;
     }

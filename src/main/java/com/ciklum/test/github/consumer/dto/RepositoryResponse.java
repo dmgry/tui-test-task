@@ -11,9 +11,9 @@ import java.util.List;
 @AllArgsConstructor
 @Getter
 @Setter
-public class RepositoryRS {
+public class RepositoryResponse {
 
     private String name;
     private String login;
-    private List<BranchRS> branches;
+    private List<BranchResponse> branches;
 }

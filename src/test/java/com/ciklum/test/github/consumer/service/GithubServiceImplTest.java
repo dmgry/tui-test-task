@@ -1,0 +1,1 @@
+package com.ciklum.test.github.consumer.service;import org.junit.jupiter.api.Test;class GithubServiceImplTest {    @Test    void getUserRepositories() {//        TODO: implement    }}

@@ -14,12 +14,12 @@ public class RestTemplateConfig {
     private GithubProperties props;
 
     @Bean
-    public RestTemplate restTemplate() {
-        RestTemplate restTemplate = new RestTemplateBuilder()
+    public RestTemplate githubRestTemplate() {
+        RestTemplate githubRestTemplate = new RestTemplateBuilder()
                 .rootUri(props.getBaseurl())
                 .build();
 
-        return restTemplate;
+        return githubRestTemplate;
     }
 
 }

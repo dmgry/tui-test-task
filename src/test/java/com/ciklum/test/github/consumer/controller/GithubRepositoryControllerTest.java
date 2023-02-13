@@ -38,7 +38,7 @@ public class GithubRepositoryControllerTest {
     @Autowired
     private WebApplicationContext context;
     @Autowired
-    private RestTemplate restTemplate;
+    private RestTemplate githubRestTemplate;
     @Autowired
     private GithubProperties properties;
 
@@ -49,7 +49,7 @@ public class GithubRepositoryControllerTest {
     @BeforeEach
     public void setup() {
         mockMvc = MockMvcBuilders.webAppContextSetup(context).build();
-        mockRestServiceServer = MockRestServiceServer.createServer(restTemplate);
+        mockRestServiceServer = MockRestServiceServer.createServer(githubRestTemplate);
     }
 
     @Test
@@ -59,7 +59,7 @@ public class GithubRepositoryControllerTest {
 
         initMockServerResponse(username, branchName);
 
-        mockMvc.perform(get("/api/github/{username}/repositories", username))
+        mockMvc.perform(get("/api/github/users/{username}/repositories", username))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$").isArray())
                 .andExpect(jsonPath("$", hasSize(1)))
@@ -70,7 +70,6 @@ public class GithubRepositoryControllerTest {
                 .andExpect(jsonPath("$[0].branches[1].name").value("Dev"))
                 .andExpect(jsonPath("$[0].branches[0].lastCommitSha").value("ascklefgj3409ru89dasuc98sdoivjowi"));
         mockRestServiceServer.verify();
-
     }
 
     @Test
@@ -83,7 +82,7 @@ public class GithubRepositoryControllerTest {
 
         initMockServerNegativeResponse(notFoundUserName, notFoundUserMsg);
 
-        mockMvc.perform(get("/api/github/{username}/repositories", notFoundUserName))
+        mockMvc.perform(get("/api/github/users/{username}/repositories", notFoundUserName))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.status").value("404"))
                 .andExpect(jsonPath("$.message").value("Not found github user data, please enter valid username"));

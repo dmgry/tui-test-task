@@ -1,7 +1,7 @@
 package com.ciklum.test.github.consumer.controller;
 
 
-import com.ciklum.test.github.consumer.dto.RepositoryRS;
+import com.ciklum.test.github.consumer.dto.RepositoryResponse;
 import com.ciklum.test.github.consumer.service.GithubRepoService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,10 +21,10 @@ public class GithubRepoController {
 
     private GithubRepoService repoService;
 
-    @GetMapping("/{username}/repositories")
-    public ResponseEntity<List<RepositoryRS>> getRepoByName(@PathVariable String username) {
+    @GetMapping("users/{username}/repositories")
+    public ResponseEntity<List<RepositoryResponse>> getRepoByName(@PathVariable String username) {
         log.info("Received incoming request fetch repo data for username: {} ",username);
-        List<RepositoryRS> repoRs = repoService.getUserRepositories(username);
+        List<RepositoryResponse> repoRs = repoService.getUserRepositories(username);
 
         return ResponseEntity.ok(repoRs);
     }

@@ -54,10 +54,10 @@ Error Handling
 
 The application includes error handling to return a meaningful response in case of any errors. The following error responses are available:
     
-    200 SUccess: returned repositories and their branches
+    200 Success: returned repositories and their branches
     404 Not Found: returned when the specified GitHub user does not exist.
     406 Not Acceptable: returned when the API consumer request header Accept is set to application/xml.
-    500: General problem
+    500 General problem: undefiend problem which not take into account in exception handling
 
 Testing
 
