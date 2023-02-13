@@ -86,17 +86,6 @@ Tips
 Project use Lombok library, don't forget to enable Annotation processing.
 
 
-Clarification of the task problem and decisions made
-
-Suggestions:
-
-1. In the task item "As an api consumer, given header Accept: application/xml  would like to receive 406 
-response"
-I decided that you should only to filter application/xml format which have not be supported. If we need to support 
-just "application/json" I will be use another solution, something like consume argument in Controller with 
-appropriate type.
-2. 
-
 
 
 
