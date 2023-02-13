@@ -61,7 +61,7 @@ The application includes error handling to return a meaningful response in case 
 
 Testing
 
-Test currenlty covers only Controller level and can be good guide to overview basic supported scenarios
+Test currently covers only Controller level and can be good guide to overview basic supported scenarios
 To run the test cases, execute the following command from the command line:
 
     ./mvnw test    
